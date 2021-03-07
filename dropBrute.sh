@@ -75,7 +75,7 @@ ipt='/usr/sbin/iptables'
 [ `date +'%s'` -lt 1320000000 ] && echo System date not set, aborting. && exit -1
 $ipt -N $iptChain >&/dev/null
 
-today=`date +'%b %d'`
+today=`date +'%a %b'`
 now=`date +'%s'`
 nowPlus=$((now + secondsToBan))
 
@@ -87,8 +87,8 @@ logLine()
 }
 
 # find new badIPs
-for badIP in `logread|egrep "^$today"|fgrep dropbear|egrep 'login attempt for nonexistent user'\|'bad password attempt for'|sed 's/^.*from //'|sed 's/:.*$//'|sort -u` ; do
-  found=`logread|egrep "^$today"|fgrep dropbear|egrep 'login attempt for nonexistent user'\|'bad password attempt for'|sed 's/^.*from //'|sed 's/:.*$//'|fgrep $badIP|wc -l`
+for badIP in `logread|egrep "^$today"|fgrep dropbear|egrep 'Login attempt for nonexistent user'\|'Bad password attempt for'|sed 's/^.*from //'|sed 's/:.*$//'|sort -u` ; do
+  found=`logread|egrep "^$today"|fgrep dropbear|egrep 'Login attempt for nonexistent user'\|'Bad password attempt for'|sed 's/^.*from //'|sed 's/:.*$//'|fgrep $badIP|wc -l`
   if [ $found -gt $allowedAttempts ] ; then
     if [ `egrep \ $badIP\$ $leaseFile|wc -l` -gt 0 ] ; then
        [ `egrep \ $badIP\$ $leaseFile|cut -f1 -d\ ` -gt 0 ] && sed -i 's/^.* '$badIP\$/$nowPlus\ $badIP\/ $leaseFile
